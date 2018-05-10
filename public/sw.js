@@ -236,9 +236,23 @@ self.addEventListener('notificationclick', function(event){
     notification.close();
   } else {
     console.log(action);
-    notification.close();
+    event.waitUntil(
+      clients.matchAll()
+      .then(function(cli){
+        var client = cli.find(function(c){
+          return c.visibilityState === 'visible';
+        });
+        if(client !== undefined){
+          client.navigate(notification.data.url);
+          client.focus();
+        } else {
+          clients.openWindow(notification.data.url);
+        }
+        notification.close();
+      })
+    );
   }
-})
+});
 
 // de notificationclick event reageert/luistert naar de actions die je je notificatie meegeeft
 
@@ -252,7 +266,8 @@ self.addEventListener('push', function(event){
   console.log('push notification received');
   let data = {
     title: 'New!',
-    content: 'New Content'
+    content: 'New Content',
+    openUrl: '/'
   };
   if(event.data){
     data = JSON.parse(event.data.text());
@@ -260,8 +275,12 @@ self.addEventListener('push', function(event){
   const options = {
     body: data.content,
     icon: 'https://image.freepik.com/iconen-gratis/duim-omhoog-te-vinden-op-facebook_318-37196.jpg',
+    data: {
+      url: data.openUrl
+    }
   };
   event.waitUntil(
     self.registration.showNotification(data.title, options);
   );
 });
+// push event werkt wel, maar geen rechten voor in firebase door gratis account!
