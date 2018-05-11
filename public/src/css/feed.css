@@ -5,12 +5,31 @@
   min-height: 100vh;
   overflow-y: scroll;
   bottom: 0;
-  top: 56px;
+  top: 0;
   background: white;
   text-align: center;
   display: none;
   transform: translateY(100vh);
   transition: transform 0.5s;
+}
+
+#create-post video, #create-post canvas {
+  width: 512px;
+  max-width: 100%;
+  display: none;
+  margin: auto;
+}
+
+#create-post #pick-image {
+  display: none;
+}
+
+#create-post #capture-btn {
+  margin: 10px auto;
+}
+
+.mdl-spinner {
+  margin: auto;
 }
 
 .main-image {

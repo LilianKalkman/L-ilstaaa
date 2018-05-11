@@ -2,7 +2,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v36';
+var CACHE_STATIC_NAME = 'static-v43';
 var CACHE_DYNAMIC_NAME = 'dynamic-v2';
 var STATIC_FILES = [
   '/',
@@ -280,7 +280,7 @@ self.addEventListener('push', function(event){
     }
   };
   event.waitUntil(
-    self.registration.showNotification(data.title, options);
+    self.registration.showNotification(data.title, options)
   );
 });
 // push event werkt wel, maar geen rechten voor in firebase door gratis account!

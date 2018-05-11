@@ -25,7 +25,7 @@ exports.storeInstaData = functions.https.onRequest(function(request, response) {
    })
      .then(function() {
        // set serverside vapid key. arguments: email, public key, private key
-       webpush.setVapidDetails('mailto:liliankalkman@hotmail.com', 'BDyfedOXAr6Z-aKtV0Xt7jbKh0qIJ9Z8ko8A51H0bXQ4NjKh-M6Rg8i1aueRMSGyU29JKNAgSkLsqUIFt85QVxQ', 'CQojViwTKGukBnsXqkpvlBuFJP0FoEzlvsdQ1tATDXw');
+       webpush.setVapidDetails('mailto:test@gmail.com', 'BDyfedOXAr6Z-aKtV0Xt7jbKh0qIJ9Z8ko8A51H0bXQ4NjKh-M6Rg8i1aueRMSGyU29JKNAgSkLsqUIFt85QVxQ', 'CQojViwTKGukBnsXqkpvlBuFJP0FoEzlvsdQ1tATDXw');
        // now need to get the subscription you stored in your db, to send push noties to
        return admin.database().ref('subscriptions').once('value');
      })

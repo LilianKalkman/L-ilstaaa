@@ -5,6 +5,68 @@ var sharedMomentsArea = document.querySelector('#shared-moments');
 var form = document.querySelector('form');
 var titleInput = document.querySelector('#title');
 var locationInput = document.querySelector('#location');
+var videoPlayer = document.querySelector('#player');
+var canvasElement = document.querySelector('#canvas');
+var captureButton = document.querySelector('#capture-btn');
+var imagePicker = document.querySelector('#image-picker');
+var pickImageArea = document.querySelector('#pick-image');
+
+function initCamera(){
+  if(!('mediaDevices' in navigator)) {
+    navigator.mediaDevices = {};
+  }
+
+  if(!('getUserMedia' in navigator.mediaDevices)){
+    // if browser dus not support getUserMedia, we try to get access to older versions here,
+    // or make it manually with the function below
+    navigator.mediaDevices.getUserMedia = function(constraints){
+      var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+      if(!getUserMedia){
+        return Promise.reject(new Error('getUserMedia is not available'));
+      }
+
+      return new Promise(function(resolve, reject){
+        getUserMedia.call(navigator, constraints, resolve, reject);
+      });
+    }
+  }
+
+  navigator.mediaDevices.getUserMedia({video: true})
+    .then(function(video){
+      // link videostream aan video html element (staat op autoplay dus speelt meteen af)
+      videoPlayer.srcObject = video;
+      videoPlayer.style.display = 'block';
+    })
+    .catch(function(err){
+      console.log(err);
+      pickImageArea.style.display = 'block';
+    })
+}
+
+
+function openCreatePostModal() {
+  createPostArea.style.display = 'block';
+  setTimeout(function(){
+    createPostArea.style.transform = 'translateY(0)';
+  },1);
+  initCamera();
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+
+    deferredPrompt.userChoice.then(function(choiceResult) {
+      console.log(choiceResult.outcome);
+
+      if (choiceResult.outcome === 'dismissed') {
+        console.log('User cancelled installation');
+      } else {
+        console.log('User added to home screen');
+      }
+    });
+
+    deferredPrompt = null;
+  }
+}
 
 function sendData(){
   fetch('https://us-central1-l-ilstagram.cloudfunctions.net/storeInstaData', {
@@ -95,31 +157,12 @@ form.addEventListener('submit', function(event) {
 // });
 
 
-function openCreatePostModal() {
-  createPostArea.style.display = 'block';
-  setTimeout(function(){
-    createPostArea.style.transform = 'translateY(0)';
-  },1);
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-
-    deferredPrompt.userChoice.then(function(choiceResult) {
-      console.log(choiceResult.outcome);
-
-      if (choiceResult.outcome === 'dismissed') {
-        console.log('User cancelled installation');
-      } else {
-        console.log('User added to home screen');
-      }
-    });
-
-    deferredPrompt = null;
-  }
-}
-
 function closeCreatePostModal() {
   // createPostArea.style.display = 'none';
   createPostArea.style.transform = 'translateY(100vh)';
+  videoPlayer.style.display = 'none';
+  pickImageArea.style.display = 'none';
+  canvasElement.style.display = 'none';
 }
 
 shareImageButton.addEventListener('click', openCreatePostModal);

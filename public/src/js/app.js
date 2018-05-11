@@ -78,7 +78,7 @@ function createSubscription(){
       }
     })
     .then(function(newSubscription){
-      // send subscription to your backend so it know the endpoint URL of push server
+      // send subscription to your backend so it knows the endpoint URL of push server
       return fetch('https://l-ilstagram.firebaseio.com/subscriptions.json', {
         method: 'POST',
         headers: {
