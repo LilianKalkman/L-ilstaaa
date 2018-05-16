@@ -11,6 +11,37 @@ var captureButton = document.querySelector('#capture-btn');
 var imagePicker = document.querySelector('#image-picker');
 var pickImageArea = document.querySelector('#pick-image');
 var picture;
+var locationBtn = document.querySelector('#location-btn');
+var locationLoader = document.querySelector('#location-loader');
+var fetchedLocation;
+
+locationBtn.addEventListener('click', function(event){
+  locationBtn.style.display = 'none';
+  locationLoader.style.display = 'block';
+
+  navigator.geolocation.getCurrentPosition(function(position){
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    console.log(position);
+    fetchedLocation = position.coords.latitude;
+    locationInput.value = 'In Amsterdam';
+    document.querySelector('#manual-location').classList.add('is-focused');
+  }, function(err){
+      console.log(err);
+      locationBtn.style.display = 'inline';
+      locationLoader.style.display = 'none';
+      alert('Couldn\'t get location, please enter manually');
+      fetchedLocation = null;
+  }, {
+    timeout: 7000
+  });
+});
+
+function initLocation(){
+  if(!('geolocation' in navigator)){
+    locationBtn.style.display = 'none';
+  }
+}
 
 function initCamera(){
   if(!('mediaDevices' in navigator)) {
@@ -67,6 +98,7 @@ function openCreatePostModal() {
     createPostArea.style.transform = 'translateY(0)';
   },1);
   initCamera();
+  initLocation();
   if (deferredPrompt) {
     deferredPrompt.prompt();
 
@@ -91,6 +123,7 @@ function sendData(){
   postData.append('title', titleInput.value);
   postData.append('location', locationInput.value);
   postData.append('file', picture, id + '.png');
+  postData.append('rawLocation', fetchedLocation);
   fetch('https://us-central1-l-ilstagram.cloudfunctions.net/storeInstaData', {
     method: 'POST',
     body: postData
@@ -120,7 +153,8 @@ form.addEventListener('submit', function(event) {
           id: new Date().toISOString(),
           title: titleInput.value,
           location: locationInput.value,
-          picture: picture
+          picture: picture,
+          rawLocation: fetchedLocation;
         };
         writeData('sync-posts', post)
           .then(function() {
@@ -176,6 +210,8 @@ function closeCreatePostModal() {
   videoPlayer.style.display = 'none';
   pickImageArea.style.display = 'none';
   canvasElement.style.display = 'none';
+  locationBtn.style.display = 'inline';
+  locationLoader.style.display = 'none';
 }
 
 shareImageButton.addEventListener('click', openCreatePostModal);

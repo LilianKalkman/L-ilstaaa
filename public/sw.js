@@ -2,7 +2,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v48';
+var CACHE_STATIC_NAME = 'static-v52';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
   '/',
@@ -195,7 +195,8 @@ self.addEventListener('sync', function(event) {
             postData.append('title', dt.title);
             postData.append('location', dt.location);
             postData.append('file', dt.picture, dt.id + '.png');
-            fetch('https://us-central1-l-ilstagram.cloudfunctions.net/storeInstaData', {
+            postData.append('rawLocation', dt.rawLocation);
+            fetch('https://l-ilstagram.firebaseio.com/posts.json', {
               method: 'POST',
               body: postData
             })
@@ -281,3 +282,7 @@ self.addEventListener('push', function(event){
   );
 });
 // push event werkt wel, maar geen rechten voor in firebase door gratis account!
+
+
+
+// https://us-central1-l-ilstagram.cloudfunctions.net/storeInstaData
