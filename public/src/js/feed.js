@@ -154,7 +154,7 @@ form.addEventListener('submit', function(event) {
           title: titleInput.value,
           location: locationInput.value,
           picture: picture,
-          rawLocation: fetchedLocation;
+          rawLocation: fetchedLocation
         };
         writeData('sync-posts', post)
           .then(function() {

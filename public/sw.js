@@ -2,7 +2,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v52';
+var CACHE_STATIC_NAME = 'static-v54';
 var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
   '/',
@@ -196,7 +196,7 @@ self.addEventListener('sync', function(event) {
             postData.append('location', dt.location);
             postData.append('file', dt.picture, dt.id + '.png');
             postData.append('rawLocation', dt.rawLocation);
-            fetch('https://l-ilstagram.firebaseio.com/posts.json', {
+            fetch('https://us-central1-l-ilstagram.cloudfunctions.net/storeInstaData', {
               method: 'POST',
               body: postData
             })
