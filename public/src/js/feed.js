@@ -10,6 +10,7 @@ var canvasElement = document.querySelector('#canvas');
 var captureButton = document.querySelector('#capture-btn');
 var imagePicker = document.querySelector('#image-picker');
 var pickImageArea = document.querySelector('#pick-image');
+var picture;
 
 function initCamera(){
   if(!('mediaDevices' in navigator)) {
@@ -44,6 +45,17 @@ function initCamera(){
     })
 }
 
+captureButton.addEventListener('click', function(event){
+  canvasElement.style.display = 'block';
+  videoPlayer.style.display = 'none';
+  captureButton.style.display = 'none';
+  var context = canvasElement.getContext('2d');
+  context.drawImage(videoPlayer, 0, 0, canvas.width, videoPlayer.videoHeight / (videoPlayer.videoWidth / canvas.width));
+  videoPlayer.srcObject.getVideoTracks().forEach(function(track){
+    track.stop();
+  });
+  picture = dataURItoBlob(canvasElement.toDataURL());
+});
 
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
@@ -69,18 +81,15 @@ function openCreatePostModal() {
 }
 
 function sendData(){
+  var id = new Date().toISOString();
+  var postData = new FormData();
+  postData.append('id', id);
+  postData.append('title', titleInput.value);
+  postData.append('location', locationInput.value);
+  postData.append('file', picture, id + '.png');
   fetch('https://us-central1-l-ilstagram.cloudfunctions.net/storeInstaData', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept':'application/json'
-    },
-    body: JSON.stringify({
-      id: new Date().toISOString(),
-      title: titleInput.value,
-      location: locationInput.value,
-      image: "",
-    }),
+    body: postData
   })
   .then(function(response){
     console.log('data gepost zonder sw', response);
@@ -107,7 +116,7 @@ form.addEventListener('submit', function(event) {
           id: new Date().toISOString(),
           title: titleInput.value,
           location: locationInput.value,
-          image: "https://firebasestorage.googleapis.com/v0/b/l-ilstagram.appspot.com/o/IMG_4363.jpg?alt=media&token=43c957aa-331f-4e79-9b37-c623c1c1a4ef"
+          picture: picture
         };
         writeData('sync-posts', post)
           .then(function() {
